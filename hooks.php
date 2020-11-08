@@ -2,10 +2,10 @@
 /**
  * @package TinyPortalImporter
  * @version 1.0.0
- * @author tinoest - http://www.tinyportal.net
+ * @author tinoest
  * @license BSD 3.0
  *
- * Copyright (C) 2020 - The TinyPortal Team
+ * Copyright (C) 2020 - tinoest
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *

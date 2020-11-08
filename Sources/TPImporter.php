@@ -97,24 +97,26 @@ function template_tp_importer_admin()
 
 function TPImporterHookPreLoad() {{{
 
-    $hooks = array (
-        'tp_admin_areas'                    => array (
-            '$sourcedir/TPImporter.php|TPImporterAdminAreas',
-        ),
-        'tp_pre_admin_subactions'           => array ( 
-            '$sourcedir/TPImporter.php|TPImporterActions',
-        ),
-        'buffer'                            => 'TPImporterHookBuffer',
-    );
+    if(class_exists('TinyPortal\Integrate')) {
+        $hooks = array (
+            'tp_admin_areas'                    => array (
+                '$sourcedir/TPImporter.php|TPImporterAdminAreas',
+            ),
+            'tp_pre_admin_subactions'           => array ( 
+                '$sourcedir/TPImporter.php|TPImporterActions',
+            ),
+            'buffer'                            => 'TPImporterHookBuffer',
+        );
 
-    foreach ($hooks as $hook => $callable) {
-        if(is_array($callable)) {
-            foreach($callable as $call ) {
-                TinyPortal\Integrate::TPAddIntegrationFunction('integrate_' . $hook, $call, false);
+        foreach ($hooks as $hook => $callable) {
+            if(is_array($callable)) {
+                foreach($callable as $call ) {
+                    TinyPortal\Integrate::TPAddIntegrationFunction('integrate_' . $hook, $call, false);
+                }
             }
-        }
-        else {
-            TinyPortal\Integrate::TPAddIntegrationFunction('integrate_' . $hook, $callable, false);
+            else {
+                TinyPortal\Integrate::TPAddIntegrationFunction('integrate_' . $hook, $callable, false);
+            }
         }
     }
 

@@ -59,7 +59,7 @@ function template_tp_importer_admin()
 
                 break;
             case 'categories':
-
+                importSPCategories();
                 break;
             default:
 
@@ -104,6 +104,7 @@ function TPImporterHookPreLoad() {{{
         'tp_pre_admin_subactions'           => array ( 
             '$sourcedir/TPImporter.php|TPImporterActions',
         ),
+        'buffer'                            => 'TPImporterHookBuffer',
     );
 
     foreach ($hooks as $hook => $callable) {
@@ -140,6 +141,44 @@ function TPImporterAdminAreas() {{{
 		$admin_set = true;
 	}
 
+}}}
+
+function importSPCategories() {{{
+
+    $database   = new TinyPortal\DataBase();
+
+    // Remove all the existing categories
+     $request =  $database->db_query('', '
+		DELETE FROM {db_prefix}tp_variables
+        WHERE 1=1
+        ',
+        array()
+    );
+
+    $request =  $database->db_query('', '
+        SELECT id_category AS id, name
+        FROM {db_prefix}sp_categories
+        WHERE 1=1
+        ',
+        array()
+    );
+
+    $spCategories = array();
+
+    if($database->db_num_rows($request) > 0) {
+        while ( $block = $database->db_fetch_assoc($request) ) {
+            $spCategories[] = $block;
+        }
+    }
+
+    $database->db_free_result($request);
+
+    foreach($spCategories as $category) {
+        $id     = ($category['id']);
+        $name   = ($category['name']);
+        $database->db_query('', "INSERT INTO {db_prefix}tp_variables ( id, value1, value2, value3, type, value4, value5 ) VALUES ( '$id' , '$name' , 0 , '' , 'category' , '' , 0 )", array() );
+    }
+    
 }}}
 
 function importSPBlocks() {{{
@@ -183,11 +222,37 @@ function importSPBlocks() {{{
     $types  = array_flip($types);
 
     foreach($spBlocks as $block) {
+        switch($block['type']) {
+            case 'sp_html':
+                $block['body'] = html_entity_decode($block['body']);
+            case 'sp_php':
+            case 'sp_bbc';
+            default:
+                break;
+        }
+        // Convert to TinyPortal Format
         $type           = ($spTypeMap[$block['type']]);
         $block['type']  = ($types[$type]);
         $tpBlock->insertBlock($block);
     }
     
+}}}
+
+function TPImporterHookBuffer($buffer) {{{
+    global $settings;
+
+    // This should be updated to a better image. Also not the best way to do it but it works. 
+    $string     = '<img style="margin-bottom: 8px;" src="' . $settings['tp_images_url'] . '/TPov_import_sp.png" alt="TPov_import_sp" />';
+    $replace    = '<img src="data:image/png;base64,
+        iVBORw0KGgoAAAANSUhEUgAAAAUA
+        AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO
+        9TXL0Y4OHwAAAABJRU5ErkJggg==" alt="Red dot" />';
+
+    if(strpos($buffer, $string) !== FALSE) {
+        $buffer = str_replace($string, $replace, $buffer);
+    }
+
+    return $buffer;
 }}}
 
 ?>

@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE package-info SYSTEM "http://www.simplemachines.org/xml/package-info">
 <package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
-	<name>TinyPortalImporter</name>
-	<id>tinoest:tinyportal</id>
+	<name>TinyPortal Importer</name>
+	<id>tinoest:tinyportal_importer</id>
 	<type>modification</type>
 	<version>1.0.0</version>
 	<install for="2.0 - 2.1.99">

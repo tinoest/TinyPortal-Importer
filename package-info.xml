@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE package-info SYSTEM "http://www.simplemachines.org/xml/package-info">
+<package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
+	<name>TinyPortalImporter</name>
+	<id>tinoest:tinyportal</id>
+	<type>modification</type>
+	<version>1.0.0</version>
+	<install for="2.0 - 2.1.99">
+		<redirect url="">Installed!</redirect>
+		<require-dir name="Sources" destination="$boarddir" />
+		<code>hooks.php</code>
+	</install>
+	<uninstall for="2.0 - 2.1.99">
+		<remove-file name="$sourcedir/TPImporter.php" />
+		<code>hooks.php</code>
+	</uninstall>
+</package-info>

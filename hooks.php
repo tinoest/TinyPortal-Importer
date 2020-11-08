@@ -1,6 +1,6 @@
 <?php
 /**
- * @package TinyPortalImporter
+ * @package TinyPortal Importer
  * @version 1.0.0
  * @author tinoest
  * @license BSD 3.0

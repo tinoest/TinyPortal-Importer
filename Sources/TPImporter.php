@@ -220,6 +220,15 @@ function importSPBlocks() {{{
         'sp_bbc'    => 'html',
     );
 
+    $spSideMap = array (
+        1 => 1,
+        2 => 6,
+        3 => 5,
+        4 => 2,
+        5 => 3,
+        6 => 7,
+    );
+
     $types  = $tpBlock->getBlockType();
     $types  = array_flip($types);
 
@@ -235,6 +244,7 @@ function importSPBlocks() {{{
         // Convert to TinyPortal Format
         $type           = ($spTypeMap[$block['type']]);
         $block['type']  = ($types[$type]);
+        $block['bar']   = ($spSideMap[$block['bar']]);
         $tpBlock->insertBlock($block);
     }
     

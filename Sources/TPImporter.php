@@ -50,13 +50,13 @@ function template_tp_importer_admin()
     if(array_key_exists('import_option', $_POST)) {
 	    switch($_POST['import_option']) {
 		    case 'articles':
-                
+                importSPArticles();                
 			    break;
             case 'blocks':
                 importSPBlocks();
                 break;
             case 'shoutbox':
-
+                importSPShouts();
                 break;
             case 'categories':
                 importSPCategories();
@@ -145,9 +145,48 @@ function TPImporterAdminAreas() {{{
 
 }}}
 
+function importSPArticles() {{{
+
+    $database   = TinyPortal\DataBase::getInstance();
+
+    // Remove all the existing articles
+    $request =  $database->db_query('', '
+        DELETE FROM {db_prefix}tp_articles
+        WHERE 1=1
+        ',
+        array()
+    );
+
+   $request =  $database->db_query('', '
+        SELECT id_page AS id, namespace AS shortname, body, type, status AS off, title AS subject, views
+        FROM {db_prefix}sp_pages
+        WHERE 1=1
+        ',
+        array()
+    );
+
+    $spArticles = array();
+
+    if($database->db_num_rows($request) > 0) {
+        while ( $article = $database->db_fetch_assoc($request) ) {
+            $spArticles[] = $article;
+        }
+    }
+
+    $database->db_free_result($request);
+
+    foreach($spArticles as $article) {
+        if($article['type'] == 'html' ) {
+            $article['body'] =  html_entity_decode($article['body']);
+        }
+        TinyPortal\Article::getInstance()->insertArticle($article);
+    }
+    
+}}}
+
 function importSPCategories() {{{
 
-    $database   = new TinyPortal\DataBase();
+    $database   = TinyPortal\DataBase::getInstance();
 
     // Remove all the existing categories
      $request =  $database->db_query('', '
@@ -185,8 +224,8 @@ function importSPCategories() {{{
 
 function importSPBlocks() {{{
 
-    $tpBlock    = new TinyPortal\Block();
-    $database   = new TinyPortal\DataBase();
+    $tpBlock    = TinyPortal\Block::getInstance();
+    $database   = TinyPortal\DataBase::getInstance();
 
     // Remove all the existing blocks
     $blocks  = $tpBlock->getBlocks();
@@ -220,15 +259,6 @@ function importSPBlocks() {{{
         'sp_bbc'    => 'html',
     );
 
-    $spSideMap = array (
-        1 => 1,
-        2 => 6,
-        3 => 5,
-        4 => 2,
-        5 => 3,
-        6 => 7,
-    );
-
     $types  = $tpBlock->getBlockType();
     $types  = array_flip($types);
 
@@ -244,8 +274,43 @@ function importSPBlocks() {{{
         // Convert to TinyPortal Format
         $type           = ($spTypeMap[$block['type']]);
         $block['type']  = ($types[$type]);
-        $block['bar']   = ($spSideMap[$block['bar']]);
         $tpBlock->insertBlock($block);
+    }
+    
+}}}
+
+function importSPShouts() {{{
+
+    $database   = TinyPortal\DataBase::getInstance();
+
+    // Remove all the existing shouts
+     $request =  $database->db_query('', '
+		DELETE FROM {db_prefix}tp_shoutbox
+        WHERE 1=1
+        ',
+        array()
+    );
+
+    $request =  $database->db_query('', '
+        SELECT id_shout AS id, id_shoutbox AS shoutbox_id, id_member AS member_id, log_time AS time, body AS content
+        FROM {db_prefix}sp_shouts
+        WHERE 1=1
+        ',
+        array()
+    );
+
+    $spShouts = array();
+
+    if($database->db_num_rows($request) > 0) {
+        while ( $shout = $database->db_fetch_assoc($request) ) {
+            $spShouts[] = $shout;
+        }
+    }
+
+    $database->db_free_result($request);
+
+    foreach($spShouts as $shout) {
+        TinyPortal\Shout::getInstance()->insertShout($shout);
     }
     
 }}}

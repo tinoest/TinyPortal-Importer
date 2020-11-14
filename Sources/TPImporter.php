@@ -234,7 +234,7 @@ function importSPBlocks() {{{
     }
 
     $request =  $database->db_query('', '
-        SELECT spb.id_block AS id, spb.type AS type, spb.label AS title, spb.col AS bar, spb.row AS pos, ( 1 ^ spb.state ) AS off, ( CASE WHEN spp.variable = \'content\' THEN spp.value ELSE \'\' END ) AS body, \'theme\' AS frame
+        SELECT spb.id_block AS id, spb.type AS type, spb.label AS title, spb.col AS bar, spb.row AS pos, ( 1 ^ spb.state ) AS off, ( CASE WHEN spp.variable = \'content\' THEN spp.value ELSE \'\' END ) AS body, \'theme\' AS frame, groups_allowed AS access, display, 1 AS visible
         FROM {db_prefix}sp_blocks AS spb
         INNER JOIN {db_prefix}sp_parameters AS spp ON spb.id_block = spp.id_block 
         WHERE spp.variable = \'content\'
@@ -280,6 +280,10 @@ function importSPBlocks() {{{
             default:
                 break;
         }
+        $block['display']       = str_replace('forum', 'forumall', $block['display']);
+        $block['display']       = str_replace('portal', 'frontpage', $block['display']);
+        $block['editgroups']    = '';
+
         // Convert to TinyPortal Format
         $type           = ($spTypeMap[$block['type']]);
         $block['type']  = ($types[$type]);
